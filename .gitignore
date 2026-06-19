@@ -1,0 +1,16 @@
+.venv/
+venv/
+env/
+.env/
+__pycache__/
+.python-version
+.logfire/
+checkpoints/
+*.pth
+.env
+.env.local
+*.key
+.vscode/
+.idea/
+.DS_Store
+.pytest_cache/
