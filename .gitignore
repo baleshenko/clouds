@@ -2,6 +2,7 @@
 venv/
 env/
 .env/
+data/
 __pycache__/
 .python-version
 .logfire/
