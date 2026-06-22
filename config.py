@@ -1,6 +1,7 @@
 import yaml
 from pathlib import Path
-from pydantic import BaseModel, Field, field_validator
+from typing import Literal
+from pydantic import BaseModel, Field, field_validator, model_validator
 
 
 class TrainConfig(BaseModel):
@@ -22,9 +23,32 @@ class TrainConfig(BaseModel):
         return i
     
 
-class ModelConfig(BaseModel): ...
+class ModelConfig(BaseModel):
+    backbone: Literal[
+        "efficientnet_b0", "efficientnet_b2", "efficientnet_b4",
+        "resnet18", "resnet34", "resnet50",
+    ] = "efficientnet_b0"
+    hidden: int = Field(256, ge=64)
+    dropout: float = Field(.4, ge=.0, lt=1.)
+    freeze_backbone: bool = True
+    unfreeze_after_epoch: int = Field(
+        5,
+        ge=0,
+        description="backbone after N epochs")
+    
 
-class PathsConfig(BaseModel): ...
+class PathsConfig(BaseModel):
+    train: Path = Path("data/train")
+    val: Path = Path("data/val")
+    checkpoint: Path = Path("checkpoints/best_model.pth")
+    records: Path = Path("records")
+
+    @model_validator(mode="after")
+    def ensure_log_dir(self) -> "PathsConfig":
+        self.records.mkdir(parents=True, exist_ok=True)
+        self.checkpoint.parent.mkdir(parents=True, exist_ok=True)
+        return self
+
 
 class LogfireConfig(BaseModel):
     enabled: bool = True
