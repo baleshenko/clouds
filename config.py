@@ -3,9 +3,6 @@ from pathlib import Path
 from pydantic import BaseModel, Field, field_validator
 
 
-class AppConfig: ...
-
-
 class TrainConfig(BaseModel):
     img: int = Field(224, ge=32, le=1024, description="Square crop")
     batch: int = Field(16, ge=1, le=512)
@@ -23,6 +20,35 @@ class TrainConfig(BaseModel):
         if i % 32 != 0:
             raise ValueError("img must be divisible by 32")
         return i
+    
+
+class ModelConfig(BaseModel): ...
+
+class PathsConfig(BaseModel): ...
+
+class LogfireConfig(BaseModel):
+    enabled: bool = True
+    project_name: str = "clouds"
+    service_name: str = "train"
+
+
+class AppConfig(BaseModel):
+    train: TrainConfig = Field(default_factory=TrainConfig)
+    model: ModelConfig = Field(default_factory=ModelConfig)
+    paths: PathsConfig = Field(default_factory=PathsConfig)
+    logfire: LogfireConfig = Field(default_factory=LogfireConfig)
+
+    device: str = "auto"
+    seed: int = 42
+
+    classes: list[str] = Field(
+        default_factory=lambda: ["cumulus", "cumulonimbus"]
+    )
+
+    @field_validator("device", mode="before")
+    @classmethod
+    def resolve_device(cls, value: str) -> str:
+        return "cuda" if value == "auto" else value
     
 
 
