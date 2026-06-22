@@ -1,0 +1,10 @@
+train:
+  img: 224
+  batch: 8
+  lr: 2e-4
+  weight_decay: 1e-4
+  epochs: 100
+  patience: 15
+  label_smoothing: 0.05
+  mixup_alpha: 0.0
+  num_workers: 0
