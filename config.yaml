@@ -8,3 +8,11 @@ train:
   label_smoothing: 0.05
   mixup_alpha: 0.0
   num_workers: 0
+
+
+model:
+  backbone: efficientnet_b0
+  hidden: 128
+  dropout: 0.3
+  backbone_train: true
+  release_after_epoch: 10
